@@ -1,12 +1,12 @@
 function NNsetUp(){
 
-    N0 = new Nueron(); 
-    N1 = new Nueron();
+    N0 = new Neuron(); 
+    N1 = new Neuron();
 
-    N00 = new Nueron();
-    N01 = new Nueron();
+    N00 = new Neuron();
+    N01 = new Neuron();
     
-    N001 = new Nueron();
+    N001 = new Neuron();
     
     N0.addForwardNueron(N00,Math.random()*2 - 1)
     N1.addForwardNueron(N00,Math.random()*2 - 1)

@@ -1,4 +1,4 @@
-class Nueron{
+class Neuron{
 
     constructor(){
 
