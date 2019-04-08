@@ -89,9 +89,49 @@ class NeuralNetwork{
     return outputs;
   }
 
+  exportWeights(){
+    //Return jagged array of floats corresposding to each weight
 
+    let output = [];
+
+    for(let i = 0;i < this.network.length;i++){
+      output.push([]);
+      for(let j = 0;j < this.network[i].length;j++){
+        output[i].push(this.network[i][j].forwardWeights);
+      }
+    }
+
+    return output;
+  }
+
+  //It is expected that the imported weights are in the same size as the create network
+  importWeights(weights){
+
+
+    if(weights.length != this.network.length){
+      console.error("Incorrect outer array size of import weight matrix")
+      return;
+    }
+
+    for(let i = 0;i < this.network.length;i++){
+     if(this.network[i].length != weights[i].length){
+       console.error("Incorrect inner array size of import weight matrix");
+       return;
+     } 
+    }
+
+    //Else we know sizes match up
+    for(let i = 0;i < this.network.length;i++){
+      for(let j = 0;j < this.network[i].length;j++){
+        this.network[i][j].updateWeights(weights[i][j]);
+      }
+    }
+
+  }
 
 }
+
+
 
 //Create into seperate as currently its only 0 to 1 when its best to be -1 to 1
 function createRandom(){
