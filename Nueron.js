@@ -2,7 +2,7 @@ class Neuron{
 
     constructor(){
 
-        this.bias = 0.0;
+        this.bias = 1.0;
         this.currentValue = 0;
         this.forwardNuerons = [];
         this.forwardWeights = [];
@@ -31,7 +31,7 @@ class Neuron{
 
     propogate(){
 
-        this.currentValue = sigmoid(this.currentValue + this.bias);
+        this.currentValue = sigmoid(this.currentValue) + this.bias;
 
         for(let i = 0;i < this.forwardNuerons.length;i++){
             this.forwardNuerons[i].updateValue(this.currentValue * this.forwardWeights[i])

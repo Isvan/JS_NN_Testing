@@ -1,10 +1,10 @@
 class NeuralNetwork{
-
-  constructor(num_inputNode,num_outputNode,hiddenLayers,hidenLayerSize){
-    this.num_inputNodes = num_inputNode;
-    this.num_outputNodes = num_outputNode;
+//TODO Convert to use matrcies for that speed
+  constructor(inputNodes,outputNodes,hiddenLayers,hiddenLayerSize){
+    this.inputNodes = inputNodes;
+    this.outputNodes = outputNodes;
     this.hiddenLayers = hiddenLayers;
-    this.hidenLayerSize = hidenLayerSize;
+    this.hiddenLayerSize = hiddenLayerSize;
     this.network = [[],[]];
     //First position is later, 2nd position is node
 
@@ -17,20 +17,20 @@ class NeuralNetwork{
 
     //Link all Neurons
 
-    for(let i = 0;i < this.num_inputNodes;i++){
+    for(let i = 0;i < this.inputNodes;i++){
       this.network[0].push(new Neuron());
     }
 
     //Shift to the right one as we dont want to overright the input Neurons
     for(let i = 1;i < this.hiddenLayers + 1;i++){
       this.network.push([]);
-      for(let j = 0;j < this.hidenLayerSize;j++){
+      for(let j = 0;j < this.hiddenLayerSize;j++){
         this.network[i].push(new Neuron());
       }
 
     }
 
-    for(let i = 0;i < this.num_outputNodes;i++){
+    for(let i = 0;i < this.outputNodes;i++){
       this.network[this.hiddenLayers + 1].push(new Neuron());
     }
 
@@ -39,10 +39,10 @@ class NeuralNetwork{
     //Dont need to link up last layer
     for(let i = 0;i < this.network.length-1;i++){
       for(let j = 0;j < this.network[i].length;j++){
-
+        this.network[i][j].bias = randomNumInRange(-10,10);
         //Shouldnt hit out of bounds since we stop at 2nd to last
         for(let k = 0;k < this.network[i + 1].length;k++){
-          this.network[i][j].addForwardNueron(this.network[i+1][k],createRandom());
+          this.network[i][j].addForwardNueron(this.network[i+1][k],randomNumInRange(-10,10));
         }
 
       }
@@ -54,7 +54,7 @@ class NeuralNetwork{
   runNetwork(inputs){
 
     //Saftey catch
-    if(inputs.length != this.num_inputNodes){
+    if(inputs.length != this.inputNodes){
       console.error("Incorrect Number of inputs to Nueral Network!")
       return null;
     }
@@ -70,7 +70,7 @@ class NeuralNetwork{
     }
 
     //Set Inputs
-    for(let i = 0;i < this.num_inputNodes;i++){
+    for(let i = 0;i < this.inputNodes;i++){
       this.network[0][i].updateValue(inputs[i]);
     }
 
@@ -82,7 +82,7 @@ class NeuralNetwork{
     }
 
     //Grab Results
-    for(let i = 0;i < this.num_outputNodes;i++){
+    for(let i = 0;i < this.outputNodes;i++){
         outputs.push(this.network[this.hiddenLayers+1][i].currentValue);
     }
 
@@ -129,11 +129,20 @@ class NeuralNetwork{
 
   }
 
+  //Returns a clone of the current nueral network 
+  clone(){
+    let copy = new NeuralNetwork(this.inputNodes,this.outputNodes,this.hiddenLayers,this.hiddenLayerSize);
+    copy.network = Array.from(this.network);
+    return copy;
+  }
+
 }
-
-
 
 //Create into seperate as currently its only 0 to 1 when its best to be -1 to 1
 function createRandom(){
   return Math.random();
+}
+
+function randomNumInRange(low,high){
+  return Math.random() * (high - low) + low;
 }

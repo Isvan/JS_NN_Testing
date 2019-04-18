@@ -1,52 +1,117 @@
 function NNsetUp(){
 
-    N0 = new Neuron(); 
-    N1 = new Neuron();
-
-    N00 = new Neuron();
-    N01 = new Neuron();
-    
-    N001 = new Neuron();
-    
-    N0.addForwardNueron(N00,Math.random()*2 - 1)
-    N1.addForwardNueron(N00,Math.random()*2 - 1)
-    
-    N0.addForwardNueron(N01,Math.random()*2 - 1)
-    N1.addForwardNueron(N01,Math.random()*2 - 1)
-    
-    N01.addForwardNueron(N001,Math.random()*2 - 1)
-    N00.addForwardNueron(N001,Math.random()*2 - 1)
+    G = new GeneticEvoLearning(500,0.05,0.1,1,{inputNodes : 2, outputNodes : 1})
+  
 
 }
 
-function NNrun(input1,input2){
+graphDataHigh = []
+graphDataAvg = []
 
+function NNrun(){
     
-    N1.resetValue()
-    N0.resetValue()
-    N00.resetValue()
-    N01.resetValue()
-    N001.resetValue()
-
-
-    N0.updateValue(input1);
-    N1.updateValue(input2);
-
-    N0.propogate();
-    N1.propogate();
-    
-
-    N00.propogate();
-    N01.propogate();
-    
-    N001.propogate();
-
-    console.log(N0.currentValue);
-    console.log(N1.currentValue);
-    console.log("")
-    console.log(N00.currentValue);
-    console.log(N01.currentValue);
-    console.log("")
-    console.log(N001.currentValue);
 
 }
+
+
+function NNStep(){
+
+    let fitness = [];
+    let NN = G.getPopulation();
+    let res = 0;
+    let bestHitRate = 0;
+    
+
+    let epochs = 100;
+
+    let highestFitness = 0;
+    
+    for(let i = 0;i < NN.length;i++){
+        
+        let nnFitness = 0;
+        let hitRate = 0;
+        for(let k = 0;k < epochs;k++){
+         
+          let num1 = Math.random() * 5 - Math.random() * 5;
+          let num2 = Math.random() * 5 - Math.random() * 5;
+          
+          res = NN[i].runNetwork([num1,num2]);
+
+          
+          if(num1 > num2 ){
+
+            //Reward for correct awnser
+            if(res > 0){
+                nnFitness += res * 4;
+                hitRate++;
+            }else{ 
+                //Punish for wrong
+                nnFitness -= res * -4;
+            }
+          }
+
+
+          if(num1 < num2 ){
+
+            if(res < 0){
+                hitRate++;
+                nnFitness += res * -4;
+            }else{
+                nnFitness -= res * 4;
+            }
+          }
+        
+        }
+
+
+
+        fitness[i] = nnFitness;
+        if(nnFitness > highestFitness){
+            highestFitness = nnFitness;
+        }
+
+        if(hitRate/epochs > bestHitRate){
+            bestHitRate = hitRate/epochs;
+        }
+
+
+    }
+
+    console.log("Best hit Rate  : " + bestHitRate);
+
+    //console.log("Highest Fitness was : " + highestFitness)
+    graphDataHigh.push(highestFitness);
+    G.updatePopulationFitness(fitness);
+    graphDataAvg.push(G.getPopulation()[Math.round(G.getPopulation().length/2)].fitness)
+
+    
+}
+
+function plotResults(){
+    var best = {
+        x: [],
+        y: [],
+        type: 'scatter'
+    };
+
+    var avg = {
+        x: [],
+        y: [],
+        type: 'scatter'
+    };
+    
+    for(let i = 0;i < graphDataHigh.length;i++){
+        best.x[i] = i+1;
+        best.y[i] = graphDataHigh[i];
+
+        avg.x[i] = i+1;
+        avg.y[i] = graphDataAvg[i];
+
+        
+    }
+
+    var data = [best,avg];
+    
+    Plotly.newPlot('graph', data, {}, );
+}
+
